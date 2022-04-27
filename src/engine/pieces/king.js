@@ -12,8 +12,9 @@ export default class King extends Piece {
 
         for (let rowDir of [-1, 0, 1]) {
             for (let colDir of [-1, 0, 1]) {
-                if (rowDir !== 0 || colDir !== 0) {
-                    available.push(Square.at(position.row + rowDir, position.col + colDir));
+                let square = Square.at(position.row + rowDir, position.col + colDir);
+                if ((rowDir !== 0 || colDir !== 0) && Square.isValid(square.row, square.col)) {
+                    available.push(square);
                 }
             }
         }

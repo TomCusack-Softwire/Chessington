@@ -20,8 +20,21 @@ export default class Pawn extends Piece {
         }
 
         checkAndAdd(position.row + sign, position.col);
+
+        // double move
         if (((this.player === Player.WHITE && position.row === 1) || (this.player === Player.BLACK && position.row === 6)) && board.getPiece(Square.at(position.row + sign, position.col)) === undefined) {
             checkAndAdd(position.row + 2 * sign, position.col);
+        }
+
+        // capture
+        for (let capture_side of [1, -1]) {
+            if (Square.isValid(position.row + sign, position.col + capture_side)) {
+                let square = Square.at(position.row + sign, position.col + capture_side);
+                let piece = board.getPiece(square);
+                if (piece && piece.player !== this.player && piece.constructor.name !== "King") {
+                    available.push(square);
+                }
+            }
         }
 
         return available;

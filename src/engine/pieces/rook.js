@@ -1,5 +1,4 @@
 import Piece from './piece';
-import Square from "../square";
 
 export default class Rook extends Piece {
     constructor(player) {

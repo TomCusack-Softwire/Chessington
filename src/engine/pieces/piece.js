@@ -28,8 +28,12 @@ export default class Piece {
                 col += colDir;
                 square = Square.at(row, col);
             }
-            if (Square.isValid(row, col) && board.getPiece(square) && board.getPiece(square).player !== this.player) {
-                available.push(square);
+
+            if (Square.isValid(row, col)) {
+                let piece = board.getPiece(square); // piece on last square
+                if (piece && piece.player !== this.player && piece.constructor.name !== "King") {
+                    available.push(square);
+                }
             }
         }
         return available;

@@ -99,6 +99,10 @@ describe('Pawn', () => {
             const moves = pawnW.getAvailableMoves(board);
 
             moves.should.deep.include(Square.at(5, 3));
+
+            pawnW.moveTo(board, Square.at(5, 3));
+
+            should.not.exist(board.getPiece(Square.at(4, 3)));
         });
 
         it("cannot en passant if not on same move", () => {
@@ -244,6 +248,10 @@ describe('Pawn', () => {
             const moves = pawnB.getAvailableMoves(board);
 
             moves.should.deep.include(Square.at(2, 3));
+
+            pawnB.moveTo(board, Square.at(2, 3));
+
+            should.not.exist(board.getPiece(Square.at(3, 3)));
         });
 
         it("cannot en passant if not on same move", () => {

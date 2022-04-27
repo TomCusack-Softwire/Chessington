@@ -39,8 +39,15 @@ export default class Board {
     movePiece(fromSquare, toSquare) {
         const movingPiece = this.getPiece(fromSquare);        
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
+
+            // en passant removal
+            if (this.freeSpace(toSquare) && fromSquare.row !== toSquare.row && fromSquare.col !== toSquare.col) {
+                this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined);
+            }
+
             this.setPiece(toSquare, movingPiece);
             this.setPiece(fromSquare, undefined);
+
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
             this.lastMove = [fromSquare, toSquare];
         }

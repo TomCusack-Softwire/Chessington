@@ -9,10 +9,15 @@ export default class Knight extends Piece {
     getAvailableMoves(board) {
         let position = board.findPiece(this);
         let available = [];
+        let player = this.player;
 
         function checkAndAdd(row, col) {
+            let square = Square.at(row, col);
             if (Square.isValid(row, col)) {
-                available.push(Square.at(row, col));
+                let piece = board.getPiece(square);
+                if (piece === undefined || (piece.player !== player && piece.constructor.name !== "King")) {
+                    available.push(square);
+                }
             }
         }
 

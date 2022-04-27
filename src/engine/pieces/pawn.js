@@ -30,6 +30,12 @@ export default class Pawn extends Piece {
             }
         }
 
+        // en passant
+        let [previousFrom, previousTo] = board.lastMove;
+        if (previousFrom && previousTo && board.getPiece(previousTo) instanceof Pawn && previousFrom.row - 2 * sign === previousTo.row) {
+            available.push(Square.at(previousFrom.row - sign, previousFrom.col));
+        }
+
         return available;
     }
 }

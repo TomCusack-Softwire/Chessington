@@ -85,6 +85,71 @@ describe('Pawn', () => {
             moves.should.not.deep.include(Square.at(5, 3));
         });
 
+        it("can en passant in valid conditions", () => {
+            // (B:) double move, check for en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(4, 4), pawnW);
+            board.setPiece(Square.at(6, 3), pawnB);
+
+            pawnB.moveTo(board, Square.at(4, 3));
+
+            const moves = pawnW.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(5, 3));
+        });
+
+        it("cannot en passant if not on same move", () => {
+            // (B:) non-pawn move but pawn in right position, check for no en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+            const pawnB2 = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(4, 4), pawnW);
+            board.setPiece(Square.at(4, 3), pawnB);
+            board.setPiece(Square.at(0, 6), pawnB2);
+
+            pawnB2.moveTo(board, Square.at(0, 5));
+
+            const moves = pawnW.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(5, 3));
+        });
+
+        it("cannot en passant if come from single move", () => {
+            // (B:) single pawn move but pawn in right position, check for no en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(4, 4), pawnW);
+            board.setPiece(Square.at(5, 3), pawnB);
+
+            pawnB.moveTo(board, Square.at(4, 3));
+
+            const moves = pawnW.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(5, 3));
+        });
+
+        it("cannot en passant non-pawn pieces", () => {
+            // (B:) rook doing perfect setup, check for no en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const rookB = new Rook(Player.BLACK);
+
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(4, 4), pawnW);
+            board.setPiece(Square.at(6, 3), rookB);
+
+            rookB.moveTo(board, Square.at(4, 3));
+
+            const moves = pawnW.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(5, 3));
+        });
     });
 
     describe('black pawns', () => {
@@ -162,6 +227,73 @@ describe('Pawn', () => {
             const moves = pawn.getAvailableMoves(board);
 
             moves.should.not.deep.include(Square.at(3, 3));
+        });
+
+
+        it("can en passant in valid conditions", () => {
+            // (W:) double move, check for en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.WHITE;
+            board.setPiece(Square.at(1, 3), pawnW);
+            board.setPiece(Square.at(3, 2), pawnB);
+
+            pawnW.moveTo(board, Square.at(3, 3));
+
+            const moves = pawnB.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(2, 3));
+        });
+
+        it("cannot en passant if not on same move", () => {
+            // (W:) non-pawn move but pawn in right position, check for no en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnW2 = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.WHITE;
+            board.setPiece(Square.at(3, 3), pawnW);
+            board.setPiece(Square.at(3, 2), pawnB);
+            board.setPiece(Square.at(0, 1), pawnW2);
+
+            pawnW2.moveTo(board, Square.at(0, 2));
+
+            const moves = pawnB.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(2, 3));
+        });
+
+        it("cannot en passant if come from single move", () => {
+            // (W:) single pawn move but pawn in right position, check for no en passant
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.WHITE;
+            board.setPiece(Square.at(2, 3), pawnW);
+            board.setPiece(Square.at(3, 2), pawnB);
+
+            pawnW.moveTo(board, Square.at(3, 3));
+
+            const moves = pawnW.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(2, 3));
+        });
+
+        it("cannot en passant non-pawn pieces", () => {
+            // (W:) rook doing perfect setup, check for no en passant
+            const rookW = new Rook(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.WHITE;
+            board.setPiece(Square.at(1, 3), rookW);
+            board.setPiece(Square.at(3, 2), pawnB);
+
+            rookW.moveTo(board, Square.at(3, 3));
+
+            const moves = pawnB.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(2, 3));
         });
     });
 

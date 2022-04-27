@@ -1,3 +1,5 @@
+import GameSettings from "./gameSettings";
+
 export default class Square {
     constructor(row, col) {
         this.row = row;
@@ -9,7 +11,7 @@ export default class Square {
     }
 
     static isValid(row, col) {
-        return (0 <= row && row <= 7 && 0 <= col && col <= 7);
+        return (0 <= row && row < GameSettings.BOARD_SIZE && 0 <= col && col < GameSettings.BOARD_SIZE);
     }
 
     equals(otherSquare) {

@@ -14,7 +14,7 @@ export default class Bishop extends Piece {
             for (let colDir of [1, -1]) {
                 let row = position.row + rowDir;
                 let col = position.col + colDir;
-                while (0 <= row && row < 8 && 0 <= col && col < 8) {
+                while (Square.isValid(row, col)) {
                     available.push(Square.at(row, col));
                     row += rowDir;
                     col += colDir;

@@ -14,10 +14,15 @@ export default class Bishop extends Piece {
             for (let colDir of [1, -1]) {
                 let row = position.row + rowDir;
                 let col = position.col + colDir;
-                while (Square.isValid(row, col)) {
-                    available.push(Square.at(row, col));
+                let square = Square.at(row, col);
+                while (Square.isValid(row, col) && board.getPiece(square) === undefined) {
+                    available.push(square);
                     row += rowDir;
                     col += colDir;
+                    square = Square.at(row, col);
+                }
+                if (Square.isValid(row, col) && board.getPiece(square) && board.getPiece(square).player !== this.player) {
+                    available.push(square);
                 }
             }
         }

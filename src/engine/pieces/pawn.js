@@ -12,28 +12,21 @@ export default class Pawn extends Piece {
         let sign = (this.player === Player.WHITE ? 1 : -1);
         let available = [];
 
-        function checkAndAdd(row, col) {
-            let square = Square.at(row, col);
-            if (Square.isValid(row, col) && board.getPiece(square) === undefined) {
-                available.push(square);
+        let square1 = Square.at(position.row + sign, position.col);
+        let square2 = Square.at(position.row + 2 * sign, position.col);
+
+        if (board.freeSpace(square1)) {
+            available.push(square1);
+            if (board.freeSpace(square2) && ((this.player === Player.WHITE && position.row === 1) || (this.player === Player.BLACK && position.row === 6))) {
+                available.push(square2);
             }
-        }
-
-        checkAndAdd(position.row + sign, position.col);
-
-        // double move
-        if (((this.player === Player.WHITE && position.row === 1) || (this.player === Player.BLACK && position.row === 6)) && board.getPiece(Square.at(position.row + sign, position.col)) === undefined) {
-            checkAndAdd(position.row + 2 * sign, position.col);
         }
 
         // capture
         for (let capture_side of [1, -1]) {
-            if (Square.isValid(position.row + sign, position.col + capture_side)) {
-                let square = Square.at(position.row + sign, position.col + capture_side);
-                let piece = board.getPiece(square);
-                if (piece && piece.player !== this.player && piece.constructor.name !== "King") {
-                    available.push(square);
-                }
+            let square = Square.at(position.row + sign, position.col + capture_side);
+            if (Square.isValid(square) && this.canCapture(board.getPiece(square))) {
+                available.push(square);
             }
         }
 

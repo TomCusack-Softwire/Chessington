@@ -10,8 +10,9 @@ export default class Square {
         return new Square(row, col);
     }
 
-    static isValid(row, col) {
-        return (0 <= row && row < GameSettings.BOARD_SIZE && 0 <= col && col < GameSettings.BOARD_SIZE);
+    static isValid(square) {
+        return (0 <= square.row && square.row < GameSettings.BOARD_SIZE &&
+                0 <= square.col && square.col < GameSettings.BOARD_SIZE);
     }
 
     equals(otherSquare) {

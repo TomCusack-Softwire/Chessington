@@ -14,26 +14,46 @@ export default class Piece {
         board.movePiece(currentSquare, newSquare);
     }
 
+    canCapture(otherPiece) {
+        // is piece the other color and not a king
+        return otherPiece && otherPiece.player !== this.player && otherPiece.constructor.name !== "King";
+    }
+
+    canMove(board, square, allowCaptures=true) {
+        return board.freeSpace(square) || (allowCaptures && Square.isValid(square) && this.canCapture(board.getPiece(square)));
+    }
+
+    checkAllRowsAndCols(board, rowsAndCols) {
+        // given [[rowOffset1, colOffset1], ...] 'offsets', check which are valid moves
+        let position = board.findPiece(this);
+        let available = [];
+        for (let [rowOffset, colOffset] of rowsAndCols) {
+            let square = Square.at(position.row + rowOffset, position.col + colOffset);
+            if (Square.isValid(square) && this.canMove(board, square)) {
+                available.push(square);
+            }
+        }
+        return available;
+    }
+
     loopOverRowsAndCols(board, rowsAndCols) {
-        // given 'this' [[rowDir1, colDir1], ...], loop through all available moves
+        // given [[rowDir1, colDir1], ...] 'direction vectors', loop through all available moves
         let position = board.findPiece(this);
         let available = [];
         for (let [rowDir, colDir] of rowsAndCols) {
             let row = position.row + rowDir;
             let col = position.col + colDir;
             let square = Square.at(row, col);
-            while (Square.isValid(row, col) && board.getPiece(square) === undefined) {
+            while (board.freeSpace(square)) {
                 available.push(square);
                 row += rowDir;
                 col += colDir;
                 square = Square.at(row, col);
             }
 
-            if (Square.isValid(row, col)) {
-                let piece = board.getPiece(square); // piece on last square
-                if (piece && piece.player !== this.player && piece.constructor.name !== "King") {
-                    available.push(square);
-                }
+            // test last square (either filled or out of bounds, since loop terminated)
+            if (this.canMove(board, square)) {
+                available.push(square);
             }
         }
         return available;

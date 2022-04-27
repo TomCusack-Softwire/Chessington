@@ -43,4 +43,8 @@ export default class Board {
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
         }
     }
+
+    freeSpace(square) {
+        return Square.isValid(square) && this.getPiece(square) === undefined;
+    }
 }

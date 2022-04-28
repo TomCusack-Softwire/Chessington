@@ -107,6 +107,22 @@ describe('Pawn', () => {
                 should.not.exist(board.getPiece(Square.at(4, 3)));
             });
 
+            it("cannot en passant if not on correct row", () => {
+                // (W:) pawn one row too high, double pawn move, check for no en passant
+                const pawnW = new Pawn(Player.WHITE);
+                const pawnB = new Pawn(Player.BLACK);
+
+                board.currentPlayer = Player.BLACK;
+                board.setPiece(Square.at(5, 1), pawnW);
+                board.setPiece(Square.at(6, 2), pawnB);
+
+                pawnB.moveTo(board, Square.at(4, 2));
+
+                const moves = pawnW.getAvailableMoves(board);
+
+                moves.should.not.deep.include(Square.at(5, 2));
+            });
+
             it("cannot en passant if not on same move", () => {
                 // (B:) non-pawn move but pawn in right position, check for no en passant
                 const pawnW = new Pawn(Player.WHITE);
@@ -255,6 +271,22 @@ describe('Pawn', () => {
                 pawnB.moveTo(board, Square.at(2, 3));
 
                 should.not.exist(board.getPiece(Square.at(3, 3)));
+            });
+
+            it("cannot en passant if not on correct row", () => {
+                // (B:) pawn one row too high, double pawn move, check for no en passant
+                const pawnW = new Pawn(Player.WHITE);
+                const pawnB = new Pawn(Player.BLACK);
+
+                board.currentPlayer = Player.WHITE;
+                board.setPiece(Square.at(1, 2), pawnW);
+                board.setPiece(Square.at(2, 1), pawnB);
+
+                pawnW.moveTo(board, Square.at(3, 2));
+
+                const moves = pawnB.getAvailableMoves(board);
+
+                moves.should.not.deep.include(Square.at(2, 2));
             });
 
             it("cannot en passant if not on same move", () => {

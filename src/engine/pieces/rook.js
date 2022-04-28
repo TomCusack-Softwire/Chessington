@@ -5,7 +5,7 @@ export default class Rook extends Piece {
         super(player);
     }
 
-    getAvailableMoves(board) {
+    getAvailableMovesWithoutCheck(board) {
         return this.loopOverRowsAndCols(board, [[1, 0], [-1, 0], [0, 1], [0, -1]]);
     }
 }

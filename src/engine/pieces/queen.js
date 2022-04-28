@@ -5,7 +5,7 @@ export default class Queen extends Piece {
         super(player);
     }
 
-    getAvailableMoves(board) {
+    getAvailableMovesWithoutCheck(board) {
         return this.loopOverRowsAndCols(board, [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]);
     }
 }

@@ -7,7 +7,7 @@ export default class Knight extends Piece {
     }
     
 
-    getAvailableMoves(board) {
+    getAvailableMovesWithoutCheck(board) {
         return this.checkAllRowsAndCols(board, [[1,2],[1,-2],[-1,2],[-1,-2],[2,1],[2,-1],[-2,1],[-2,-1]]);
     }
 }

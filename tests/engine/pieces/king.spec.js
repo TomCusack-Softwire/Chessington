@@ -229,4 +229,92 @@ describe('King', () => {
             should.not.exist(board.getPiece(Square.at(0, 0)));
         });
     });
+
+    describe("checks", () => {
+        it("cannot move into check", () => {
+            const king = new King(Player.WHITE);
+            const pawn = new Pawn(Player.BLACK);
+
+            board.setPiece(Square.at(1, 1), king);
+            board.setPiece(Square.at(2, 3), pawn);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(1, 2));
+        });
+
+        it("cannot move irrelevant piece when in check", () => {
+            const king = new King(Player.WHITE);
+            const pawnW = new Pawn(Player.WHITE);
+            const pawnB = new Pawn(Player.BLACK);
+
+            board.setPiece(Square.at(1, 1), king);
+            board.setPiece(Square.at(2, 2), pawnB);
+            board.setPiece(Square.at(1, 0), pawnW);
+
+            const moves = pawnB.getAvailableMoves(board);
+
+            moves.should.be.empty;
+        });
+
+        it("can escape check by blocking", () => {
+            const king = new King(Player.WHITE);
+            const rookW = new Rook(Player.WHITE);
+            const rookB = new Rook(Player.BLACK);
+
+            board.setPiece(Square.at(0, 0), king);
+            board.setPiece(Square.at(7, 1), rookW);
+            board.setPiece(Square.at(0, 7), rookB);
+
+            const moves = rookW.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(0, 1));
+            moves.should.have.length(1);
+        });
+
+        it("cannot take protected pieces", () => {
+            const king = new King(Player.WHITE);
+            const rook1 = new Rook(Player.BLACK);
+            const rook2 = new Rook(Player.BLACK);
+
+            board.setPiece(Square.at(0, 0), king);
+            board.setPiece(Square.at(0, 1), rook1);
+            board.setPiece(Square.at(7, 1), rook2);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 1));
+        });
+
+        it("can deal with discovered check", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.BLACK);
+            const pawn = new Pawn(Player.BLACK);
+
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(1, 0), king);
+            board.setPiece(Square.at(1, 4), pawn);
+            board.setPiece(Square.at(1, 7), rook);
+
+            pawn.moveTo(board, Square.at(0, 4));
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(1, 1));
+        });
+
+        it("will not move out of a pin illegally", () => {
+            const king = new King(Player.WHITE);
+            const rookW = new Rook(Player.WHITE);
+            const rookB = new Rook(Player.BLACK);
+
+            board.setPiece(Square.at(0, 0), king);
+            board.setPiece(Square.at(0, 1), rookW);
+            board.setPiece(Square.at(0, 2), rookB);
+
+            const moves = rookW.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(1, 1));
+        });
+    });
 });

@@ -1,4 +1,5 @@
 import Square from "../square";
+import GameSettings from "../gameSettings";
 
 export default class Piece {
     constructor(player) {
@@ -7,6 +8,20 @@ export default class Piece {
     }
 
     getAvailableMoves(board) {
+        let king = this.getKing(board, board.currentPlayer);
+        let moves = this.getAvailableMovesWithoutCheck(board);
+        if (king === undefined) {
+            return moves;
+        }
+        console.log(moves);
+        return moves.filter(newSquare => {
+            let simulated = board.copyBoard();
+            simulated.movePiece(simulated.findPiece(this), newSquare);
+            return !king.isInCheck(simulated);
+        });
+    }
+
+    getAvailableMovesWithoutCheck(board) {
         throw new Error('This method must be implemented, and return a list of available moves');
     }
 
@@ -58,5 +73,16 @@ export default class Piece {
             }
         }
         return available;
+    }
+
+    getKing(board, player) {
+        for (let row = 0; row < GameSettings.BOARD_SIZE; row++) {
+            for (let col = 0; col < GameSettings.BOARD_SIZE; col++) {
+                let piece = board.getPiece(Square.at(row, col));
+                if (piece && piece.player === player && piece.constructor.name === "King") {
+                    return piece;
+                }
+            }
+        }
     }
 }

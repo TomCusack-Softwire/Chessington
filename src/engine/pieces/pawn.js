@@ -7,7 +7,7 @@ export default class Pawn extends Piece {
         super(player);
     }
 
-    getAvailableMoves(board) {
+    getAvailableMovesWithoutCheck(board) {
         let position = board.findPiece(this);
         let sign = (this.player === Player.WHITE ? 1 : -1);
         let available = [];

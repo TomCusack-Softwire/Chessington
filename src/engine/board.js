@@ -41,6 +41,20 @@ export default class Board {
         return board;
     }
 
+    copyBoard() {
+        const simulated = new Board(this.currentPlayer);
+        simulated.lastMove = this.lastMove;
+        for (let row = 0; row < GameSettings.BOARD_SIZE; row++) {
+            for (let col = 0; col < GameSettings.BOARD_SIZE; col++) {
+                let square = Square.at(row, col);
+                if (this.getPiece(square)) {
+                    simulated.setPiece(square, this.getPiece(square));
+                }
+            }
+        }
+        return simulated;
+    }
+
     setPiece(square, piece) {
         this.board[square.row][square.col] = piece;
     }

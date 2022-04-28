@@ -37,12 +37,11 @@ export default class Board {
     }
 
     movePiece(fromSquare, toSquare) {
-        const movingPiece = this.getPiece(fromSquare);        
+        const movingPiece = this.getPiece(fromSquare);
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
 
             // en passant removal
-            // TODO: does this remove non-pawn 'en passants'?
-            if (this.freeSpace(toSquare) && fromSquare.row !== toSquare.row && fromSquare.col !== toSquare.col) {
+            if (movingPiece.constructor.name === "Pawn" && this.freeSpace(toSquare) && fromSquare.row !== toSquare.row && fromSquare.col !== toSquare.col) {
                 this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined);
             }
 

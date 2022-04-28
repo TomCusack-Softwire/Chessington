@@ -90,4 +90,18 @@ describe('Bishop', () => {
 
         moves.should.not.deep.include(Square.at(6, 6));
     });
+
+    it("cannot en-passant pieces", () => {
+        let bishop = new Bishop(Player.WHITE);
+        let pawn1 = new Pawn(Player.WHITE);
+        let pawn2 = new Pawn(Player.WHITE);
+        board.setPiece(Square.at(0, 0), bishop);
+        board.setPiece(Square.at(0, 1), pawn1);
+        board.setPiece(Square.at(1, 0), pawn2);
+
+        bishop.moveTo(board, Square.at(1, 1));
+
+        board.getPiece(Square.at(0, 1)).should.deep.equal(pawn1);
+        board.getPiece(Square.at(1, 0)).should.deep.equal(pawn2);
+    });
 });

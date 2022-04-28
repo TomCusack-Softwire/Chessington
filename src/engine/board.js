@@ -41,8 +41,28 @@ export default class Board {
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
 
             // en passant removal
+            // TODO: does this remove non-pawn 'en passants'?
             if (this.freeSpace(toSquare) && fromSquare.row !== toSquare.row && fromSquare.col !== toSquare.col) {
                 this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined);
+            }
+
+            // castling rook
+            if (movingPiece.constructor.name === "King" && Math.abs(fromSquare.col - toSquare.col) === 2) {
+                let direction = (fromSquare.col < toSquare.col) ? 1 : -1;
+                let rook_col = toSquare.col;
+                let square = toSquare;
+
+                while (Square.isValid(square) && (!this.getPiece(square) || this.getPiece(square).constructor.name !== "Rook")) {
+                    rook_col += direction;
+                    square = Square.at(square.row, rook_col);
+                }
+                if (!Square.isValid(square)) {
+                    throw new Error("No rook found! Invalid move.");
+                }
+                let rook = this.getPiece(square);
+                this.setPiece(Square.at(toSquare.row, toSquare.col - direction), rook);
+                this.setPiece(square, undefined);
+                rook.hasMoved = true;
             }
 
             this.setPiece(toSquare, movingPiece);

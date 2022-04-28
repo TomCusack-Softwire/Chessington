@@ -4,6 +4,7 @@ import Pawn from '../../../src/engine/pieces/pawn';
 import Board from '../../../src/engine/board';
 import Player from '../../../src/engine/player';
 import Square from '../../../src/engine/square';
+import Rook from "../../../src/engine/pieces/rook";
 
 describe('King', () => {
 
@@ -75,5 +76,157 @@ describe('King', () => {
         const moves = king.getAvailableMoves(board);
 
         moves.should.not.deep.include(Square.at(5, 5));
+    });
+
+    describe("castling", () => {
+        it("white king can castle king-side", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 7), rook);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(0, 6));
+        });
+
+        it("white king can castle queen-side", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 0), rook);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(0, 2));
+        });
+
+        it("black king can castle king-side", () => {
+            const king = new King(Player.BLACK);
+            const rook = new Rook(Player.BLACK);
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(7, 4), king);
+            board.setPiece(Square.at(7, 7), rook);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(7, 6));
+        });
+
+        it("black king can castle queen-side", () => {
+            const king = new King(Player.BLACK);
+            const rook = new Rook(Player.BLACK);
+            board.currentPlayer = Player.BLACK;
+            board.setPiece(Square.at(7, 4), king);
+            board.setPiece(Square.at(7, 0), rook);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.deep.include(Square.at(7, 2));
+        });
+
+        it("king cannot castle if it has moved", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            board.setPiece(Square.at(0, 3), king);
+            board.setPiece(Square.at(0, 7), rook);
+
+            king.moveTo(board, Square.at(0, 4));
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 6));
+        });
+
+        it("king cannot castle if a rook has moved", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 6), rook);
+
+            rook.moveTo(board, Square.at(0, 7));
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 6));
+        });
+
+        it("king cannot castle through a friendly piece", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            const pawn = new Pawn(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 7), rook);
+            board.setPiece(Square.at(0, 5), pawn);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 6));
+        });
+
+        it("king cannot castle through an enemy piece", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            const pawn = new Pawn(Player.BLACK);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 7), rook);
+            board.setPiece(Square.at(0, 5), pawn);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 6));
+        });
+
+        it("king cannot castle onto a friendly piece", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            const pawn = new Pawn(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 7), rook);
+            board.setPiece(Square.at(0, 6), pawn);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 6));
+        });
+
+        it("king cannot castle onto an enemy piece", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            const pawn = new Pawn(Player.BLACK);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 7), rook);
+            board.setPiece(Square.at(0, 5), pawn);
+
+            const moves = king.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(0, 6));
+        });
+
+        it("after castling king-side, rook also moves", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 7), rook);
+
+            king.moveTo(board, Square.at(0, 6));
+
+            should.exist(board.getPiece(Square.at(0, 5)));
+            board.getPiece(Square.at(0, 5)).constructor.name.should.equal("Rook");
+            should.not.exist(board.getPiece(Square.at(0, 7)));
+        });
+
+        it("after castling queen-side, rook also moves", () => {
+            const king = new King(Player.WHITE);
+            const rook = new Rook(Player.WHITE);
+            board.setPiece(Square.at(0, 4), king);
+            board.setPiece(Square.at(0, 0), rook);
+
+            king.moveTo(board, Square.at(0, 2));
+
+            should.exist(board.getPiece(Square.at(0, 3)));
+            board.getPiece(Square.at(0, 3)).constructor.name.should.equal("Rook");
+            should.not.exist(board.getPiece(Square.at(0, 0)));
+        });
     });
 });

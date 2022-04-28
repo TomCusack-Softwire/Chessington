@@ -30,7 +30,7 @@ export default class Piece {
         let available = [];
         for (let [rowOffset, colOffset] of rowsAndCols) {
             let square = Square.at(position.row + rowOffset, position.col + colOffset);
-            if (Square.isValid(square) && this.canMove(board, square)) {
+            if (this.canMove(board, square)) {
                 available.push(square);
             }
         }

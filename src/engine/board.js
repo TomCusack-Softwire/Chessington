@@ -9,6 +9,29 @@ export default class Board {
         this.lastMove = [undefined, undefined]; // [fromSquare, toSquare]
     }
 
+    printBoard() {
+        // for debugging purposes
+        let message = "--------\n";
+        for (let row = GameSettings.BOARD_SIZE - 1; row >= 0; row--) {
+            for (let col = 0; col < GameSettings.BOARD_SIZE; col++) {
+                let piece = this.board[row][col];
+                if (piece === undefined) {
+                    message += " ";
+                } else {
+                    if (piece.player === Player.WHITE) {
+                        message += piece.constructor.name.slice(0, 1).toLowerCase();
+                    } else {
+                        message += piece.constructor.name.slice(0, 1).toUpperCase();
+                    }
+                }
+            }
+            message += "\n";
+        }
+        message += "--------\n";
+        console.log(message);
+        return message;
+    }
+
     createBoard() {
         const board = new Array(GameSettings.BOARD_SIZE);
         for (let i = 0; i < board.length; i++) {

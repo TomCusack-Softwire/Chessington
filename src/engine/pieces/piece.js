@@ -3,6 +3,7 @@ import Square from "../square";
 export default class Piece {
     constructor(player) {
         this.player = player;
+        this.hasMoved = false;
     }
 
     getAvailableMoves(board) {

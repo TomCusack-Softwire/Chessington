@@ -17,7 +17,7 @@ export default class Pawn extends Piece {
 
         if (board.freeSpace(square1)) {
             available.push(square1);
-            if (board.freeSpace(square2) && ((this.player === Player.WHITE && position.row === 1) || (this.player === Player.BLACK && position.row === 6))) {
+            if (board.freeSpace(square2) && !this.hasMoved) {
                 available.push(square2);
             }
         }

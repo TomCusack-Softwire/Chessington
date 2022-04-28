@@ -50,6 +50,7 @@ export default class Board {
 
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
             this.lastMove = [fromSquare, toSquare];
+            movingPiece.hasMoved = true;
         }
     }
 

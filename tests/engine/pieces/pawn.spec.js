@@ -173,6 +173,15 @@ describe('Pawn', () => {
                 moves.should.not.deep.include(Square.at(5, 3));
             });
         });
+
+        it("can promote when pawn reaches 8th rank", () => {
+            const pawn = new Pawn(Player.WHITE);
+            board.setPiece(Square.at(6, 0), pawn);
+
+            pawn.moveTo(board, Square.at(7, 0));
+
+            board.getPiece(Square.at(7, 0)).constructor.name.should.not.equal("Pawn");
+        });
     });
 
     describe('black pawns', () => {
@@ -339,6 +348,15 @@ describe('Pawn', () => {
                 moves.should.not.deep.include(Square.at(2, 3));
             });
         });
+
+        it("can promote when pawn reaches 1st rank", () => {
+            const pawn = new Pawn(Player.BLACK);
+            board.setPiece(Square.at(1, 0), pawn);
+
+            pawn.moveTo(board, Square.at(0, 0));
+
+            board.getPiece(Square.at(0, 0)).constructor.name.should.not.equal("Pawn");
+        });
     });
 
     it('cannot move if there is a piece in front', () => {
@@ -362,5 +380,4 @@ describe('Pawn', () => {
 
         moves.should.not.deep.include(Square.at(4, 3));
     });
-
 });

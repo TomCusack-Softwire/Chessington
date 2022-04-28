@@ -1,6 +1,7 @@
 import Player from './player';
 import GameSettings from './gameSettings';
 import Square from './square';
+import Queen from "./pieces/queen";
 
 export default class Board {
     constructor(currentPlayer) {
@@ -60,12 +61,17 @@ export default class Board {
     }
 
     movePiece(fromSquare, toSquare) {
-        const movingPiece = this.getPiece(fromSquare);
+        let movingPiece = this.getPiece(fromSquare);
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
 
             // en passant removal
             if (movingPiece.constructor.name === "Pawn" && this.freeSpace(toSquare) && fromSquare.row !== toSquare.row && fromSquare.col !== toSquare.col) {
                 this.setPiece(Square.at(fromSquare.row, toSquare.col), undefined);
+            }
+
+            // pawn promotion
+            if (movingPiece.constructor.name === "Pawn" && (toSquare.row === 0 || toSquare.row === GameSettings.BOARD_SIZE - 1)) {
+                movingPiece = new Queen(movingPiece.player);
             }
 
             // castling rook

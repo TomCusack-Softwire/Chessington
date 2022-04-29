@@ -8,9 +8,43 @@ import Knight from '../../engine/pieces/knight';
 import Bishop from '../../engine/pieces/bishop';
 import Queen from '../../engine/pieces/queen';
 import King from '../../engine/pieces/king';
+import RandomBot from "../../engine/chessbots/randomBot";
 
 let boardUI;
 let board;
+
+export function SET_BOT(player) {
+    if (!["WHITE", "BLACK"].includes(player)) {
+        return;
+    }
+    const playerObj = (player === "WHITE") ? Player.WHITE : Player.BLACK;
+    const botOption = document.getElementById(player.toLowerCase() + "Bot").value;
+    switch (botOption) {
+        case "Human":
+            board.bots[player] = undefined;
+            break;
+        case "RandomBot":
+            board.bots[player] = new RandomBot(playerObj);
+            break;
+        default:
+            console.error("Unknown bot (" + botOption + "), leaving how it was.");
+    }
+
+    if (playerObj === board.currentPlayer && board.bots[player]) {
+        poke_for_move();
+    }
+}
+
+export function poke_for_move() {
+    let bot = board.bots[board.currentPlayer.description.toUpperCase()];
+    try {
+        bot.playMove(board);
+    } catch (e) {
+    } finally {
+        updateStatus();
+        boardUI.position(boardToPositionObject());
+    }
+}
 
 function squareToPositionString(square) {
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -26,17 +60,17 @@ function pieceToPieceString(piece) {
     const playerString = piece.player === Player.WHITE ? 'w' : 'b';
     
     if (piece instanceof Pawn) {
-        return playerString + 'P'
+        return playerString + 'P';
     } else if (piece instanceof Rook) {
-        return playerString + 'R'
+        return playerString + 'R';
     } else if (piece instanceof Knight) {
-        return playerString + 'N'
+        return playerString + 'N';
     } else if (piece instanceof Bishop) {
-        return playerString + 'B'
+        return playerString + 'B';
     } else if (piece instanceof Queen) {
-        return playerString + 'Q'
+        return playerString + 'Q';
     } else if (piece instanceof King) {
-        return playerString + 'K'
+        return playerString + 'K';
     }
 }
 
@@ -53,6 +87,11 @@ function boardToPositionObject() {
         }
     }
     return position;
+}
+
+function updateStatus() {
+    const player = board.currentPlayer === Player.WHITE ? 'White' : 'Black';
+    document.getElementById('turn-status').innerHTML = `${player} to move`;
 }
 
 function onDragStart(source, piece, position, orientation) {
@@ -72,10 +111,6 @@ function onDrop(source, target) {
     updateStatus();
 }
 
-function updateStatus() {
-    const player = board.currentPlayer === Player.WHITE ? 'White' : 'Black';
-    document.getElementById('turn-status').innerHTML = `${player} to move`;
-}
 
 function boardInStartingPosition() {
     let board = new Board();
@@ -109,6 +144,10 @@ function boardInStartingPosition() {
     return board;
 }
 
+function onSnapEnd() {
+    boardUI.position(boardToPositionObject());
+}
+
 export function createChessBoard() {
     board = boardInStartingPosition();
     boardUI = ChessBoard(
@@ -118,7 +157,8 @@ export function createChessBoard() {
             draggable: true,
             position: boardToPositionObject(board),
             onDragStart: onDragStart,
-            onDrop: onDrop
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd,
         }
     );
     updateStatus();

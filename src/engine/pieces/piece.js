@@ -13,10 +13,9 @@ export default class Piece {
         if (king === undefined) {
             return moves;
         }
-        console.log(moves);
         return moves.filter(newSquare => {
             let simulated = board.copyBoard();
-            simulated.movePiece(simulated.findPiece(this), newSquare);
+            simulated.movePiece(simulated.findPiece(this), newSquare, false);
             return !king.isInCheck(simulated);
         });
     }

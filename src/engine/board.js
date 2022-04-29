@@ -8,6 +8,18 @@ export default class Board {
         this.currentPlayer = currentPlayer ? currentPlayer : Player.WHITE;
         this.board = this.createBoard();
         this.lastMove = [undefined, undefined]; // [fromSquare, toSquare]
+        this.bots = { // undefined = human player
+            "WHITE": undefined,
+            "BLACK": undefined,
+        };
+    }
+
+    setBot(player, bot) {
+        if (player === "WHITE") {
+            this.bots["WHITE"] = new bot(Player.WHITE);
+        } else if (player === "BLACK") {
+            this.bots["BLACK"] = new bot(Player.BLACK);
+        }
     }
 
     printBoard() {
@@ -74,7 +86,7 @@ export default class Board {
         throw new Error('The supplied piece is not on the board');
     }
 
-    movePiece(fromSquare, toSquare) {
+    movePiece(fromSquare, toSquare, printMove=true) {
         let movingPiece = this.getPiece(fromSquare);
         if (!!movingPiece && movingPiece.player === this.currentPlayer) {
 
@@ -113,6 +125,18 @@ export default class Board {
             this.currentPlayer = (this.currentPlayer === Player.WHITE ? Player.BLACK : Player.WHITE);
             this.lastMove = [fromSquare, toSquare];
             movingPiece.hasMoved = true;
+
+            // once move is complete, get bot to play
+            let next_player = this.currentPlayer.description.toUpperCase();
+            if (this.bots[next_player]) {
+                const board = this;
+                board.bots[next_player].playMove(board);
+            }
+        }
+
+        // debugging
+        if (printMove) {
+            this.printBoard();
         }
     }
 

@@ -13,4 +13,19 @@
     <div id="chess-board"></div>
     <span id="turn-status"></span>
   </body>
+
+  <br>
+  <label for="whiteBot"> White </label>
+  <select id="whiteBot" onchange="chessington.SET_BOT('WHITE')">
+    <option value="Human"> Human </option>
+    <option value="RandomBot"> Random </option>
+  </select>
+  <br>
+  <label for="blackBot"> Black </label>
+  <select id="blackBot" onchange="chessington.SET_BOT('BLACK')">
+    <option value="Human"> Human </option>
+    <option value="RandomBot"> Random </option>
+  </select>
+  <br>
+  <button onclick="chessington.poke_for_move()"> if bot is broken, poke it </button>
 </html>

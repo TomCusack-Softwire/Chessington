@@ -26,8 +26,8 @@ export default class King extends Piece {
     }
 
     isInCheck(board) {
-        // rook/queen/bishop/pawn
         for (let direction of [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]) {
+            // rook/queen/bishop/pawn
             let specialPiece = direction.includes(0) ? "Rook" : "Bishop";
             let squaresInDirection = this.loopOverRowsAndCols(board, [direction]);
             let last_square = squaresInDirection[squaresInDirection.length - 1];
@@ -46,6 +46,18 @@ export default class King extends Piece {
             let piece = board.getPiece(square);
             if (piece && piece.player !== this.player && piece.constructor.name === "Knight") {
                 return true;
+            }
+        }
+
+        // king
+        for (let [row, col] of [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]) {
+            let position = board.findPiece(this);
+            let square = Square.at(position.row + row, position.col + col);
+            if (Square.isValid(square)) {
+                let piece = board.getPiece(square);
+                if (piece && piece.player !== this.player && piece.constructor.name === "King") {
+                    return true;
+                }
             }
         }
 

@@ -303,7 +303,7 @@ describe('King', () => {
             moves.should.not.deep.include(Square.at(1, 1));
         });
 
-        it("will not move out of a pin illegally", () => {
+        it("cannot move out of a pin illegally", () => {
             const king = new King(Player.WHITE);
             const rookW = new Rook(Player.WHITE);
             const rookB = new Rook(Player.BLACK);
@@ -315,6 +315,17 @@ describe('King', () => {
             const moves = rookW.getAvailableMoves(board);
 
             moves.should.not.deep.include(Square.at(1, 1));
+        });
+
+        it("cannot move into a square defended by a king", () => {
+            const kingW = new King(Player.WHITE);
+            const kingB = new King(Player.BLACK);
+            board.setPiece(Square.at(3, 3), kingW);
+            board.setPiece(Square.at(3, 5), kingB);
+
+            const moves = kingW.getAvailableMoves(board);
+
+            moves.should.not.deep.include(Square.at(3, 4));
         });
     });
 });

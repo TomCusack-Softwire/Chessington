@@ -31,20 +31,15 @@ export function SET_BOT(player) {
     }
 
     if (playerObj === board.currentPlayer && board.bots[player]) {
-        poke_for_move();
+        board.bots[player].playMove(board);
     }
 }
 
-export function poke_for_move() {
-    let bot = board.bots[board.currentPlayer.description.toUpperCase()];
-    try {
-        bot.playMove(board);
-    } catch (e) {
-    } finally {
-        updateStatus();
-        boardUI.position(boardToPositionObject());
-    }
+export function refresh() {
+    updateStatus();
+    boardUI.position(boardToPositionObject());
 }
+let loop = setInterval(refresh, 200);
 
 function squareToPositionString(square) {
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];

@@ -8,14 +8,15 @@ export default class Piece {
     }
 
     getAvailableMoves(board) {
-        let king = this.getKing(board, board.currentPlayer);
+        let king = Piece.getKing(board, board.currentPlayer);
         let moves = this.getAvailableMovesWithoutCheck(board);
         if (king === undefined) {
             return moves;
         }
         return moves.filter(newSquare => {
             let simulated = board.copyBoard();
-            simulated.movePiece(simulated.findPiece(this), newSquare, false);
+            simulated.checkForEndgame = false;
+            simulated.movePiece(simulated.findPiece(this), newSquare, false, false);
             return !king.isInCheck(simulated);
         });
     }
@@ -74,7 +75,12 @@ export default class Piece {
         return available;
     }
 
-    getKing(board, player) {
+    isOnLightSquare(board) {
+        let position = board.findPiece(this);
+        return (position.row + position.col) % 2 === 0;
+    }
+
+    static getKing(board, player) {
         for (let row = 0; row < GameSettings.BOARD_SIZE; row++) {
             for (let col = 0; col < GameSettings.BOARD_SIZE; col++) {
                 let piece = board.getPiece(Square.at(row, col));

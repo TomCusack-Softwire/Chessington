@@ -9,7 +9,7 @@ import Square from '../../../src/engine/square';
 describe('Rook', () => {
 
     let board;
-    beforeEach(() => board = new Board());
+    beforeEach(() => board = new Board(Player.WHITE, false));
 
     it('can move laterally', () => {
         const rook = new Rook(Player.WHITE);

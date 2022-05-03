@@ -5,11 +5,14 @@ import Board from '../../../src/engine/board';
 import Player from '../../../src/engine/player';
 import Square from '../../../src/engine/square';
 import Rook from "../../../src/engine/pieces/rook";
+import Queen from "../../../src/engine/pieces/queen";
+import Knight from "../../../src/engine/pieces/knight";
+import Bishop from "../../../src/engine/pieces/bishop";
 
 describe('King', () => {
 
     let board;
-    beforeEach(() => board = new Board());
+    beforeEach(() => board = new Board(Player.WHITE, false));
 
     it('can move to adjacent squares', () => {
         const king = new King(Player.WHITE);
@@ -326,6 +329,186 @@ describe('King', () => {
             const moves = kingW.getAvailableMoves(board);
 
             moves.should.not.deep.include(Square.at(3, 4));
+        });
+    });
+
+    describe("game is declared finished", () => {
+        beforeEach(() => {board.checkForEndgame = true;});
+
+        it("checkmate is declared", () => {
+            const kingW = new King(Player.WHITE);
+            const kingB = new King(Player.BLACK);
+            const queen = new Queen(Player.WHITE);
+
+            board.setPiece(Square.at(0, 4), kingB);
+            board.setPiece(Square.at(1, 0), queen);
+            board.setPiece(Square.at(2, 4), kingW);
+
+            queen.moveTo(board, Square.at(1, 4));
+
+            should.exist(board.finishReason);
+            board.finishReason.should.be.equal("Checkmate!");
+        });
+
+        it("stalemate - no legal moves left", () => {
+            const kingW = new King(Player.WHITE);
+            const kingB = new King(Player.BLACK);
+            const queen = new Queen(Player.WHITE);
+
+            board.setPiece(Square.at(0, 0), kingB);
+            board.setPiece(Square.at(1, 7), queen);
+            board.setPiece(Square.at(2, 0), kingW);
+
+            queen.moveTo(board, Square.at(1, 2));
+
+            should.exist(board.finishReason);
+            board.finishReason.should.be.equal("Stalemate! (No legal moves left)");
+        });
+
+        describe("dead position - insufficient material", () => {
+            it("king - king", () => {
+                const kingW = new King(Player.WHITE);
+                const kingB = new King(Player.BLACK);
+                const queen = new Queen(Player.BLACK);
+
+                board.setPiece(Square.at(0, 0), kingW);
+                board.setPiece(Square.at(7, 7), kingB);
+                board.setPiece(Square.at(1, 1), queen);
+
+                kingW.moveTo(board, Square.at(1, 1));
+
+                should.exist(board.finishReason);
+                board.finishReason.should.be.equal("Stalemate! (Insufficient material)");
+            });
+
+            it("king - king + bishop", () => {
+                const kingW = new King(Player.WHITE);
+                const kingB = new King(Player.BLACK);
+                const bishop = new Bishop(Player.WHITE);
+                const queen = new Queen(Player.BLACK);
+
+                board.setPiece(Square.at(0, 0), kingW);
+                board.setPiece(Square.at(7, 7), kingB);
+                board.setPiece(Square.at(0, 1), bishop);
+                board.setPiece(Square.at(1, 1), queen);
+
+                kingW.moveTo(board, Square.at(1, 1));
+
+                should.exist(board.finishReason);
+                board.finishReason.should.be.equal("Stalemate! (Insufficient material)");
+            });
+
+            it("king - king + knight", () => {
+                const kingW = new King(Player.WHITE);
+                const kingB = new King(Player.BLACK);
+                const knight = new Knight(Player.WHITE);
+                const queen = new Queen(Player.BLACK);
+
+                board.setPiece(Square.at(0, 0), kingW);
+                board.setPiece(Square.at(7, 7), kingB);
+                board.setPiece(Square.at(0, 1), knight);
+                board.setPiece(Square.at(1, 1), queen);
+
+                kingW.moveTo(board, Square.at(1, 1));
+
+                should.exist(board.finishReason);
+                board.finishReason.should.be.equal("Stalemate! (Insufficient material)");
+            });
+
+            it("king + bishop - king + bishop (same colour)", () => {
+                const kingW = new King(Player.WHITE);
+                const kingB = new King(Player.BLACK);
+                const bishopW = new Bishop(Player.WHITE);
+                const bishopB = new Bishop(Player.WHITE);
+                const queen = new Queen(Player.BLACK);
+
+                board.setPiece(Square.at(0, 0), kingW);
+                board.setPiece(Square.at(7, 7), kingB);
+                board.setPiece(Square.at(0, 1), bishopW);
+                board.setPiece(Square.at(7,  6), bishopB);
+                board.setPiece(Square.at(1, 1), queen);
+
+                kingW.moveTo(board, Square.at(1, 1));
+
+                should.exist(board.finishReason);
+                board.finishReason.should.be.equal("Stalemate! (Insufficient material)");
+            });
+
+            it("king + bishop - king + bishop (different colour) SHOULDN'T draw", () => {
+                const kingW = new King(Player.WHITE);
+                const kingB = new King(Player.BLACK);
+                const bishopW = new Bishop(Player.WHITE);
+                const bishopB = new Bishop(Player.BLACK);
+                const queen = new Queen(Player.BLACK);
+
+                board.setPiece(Square.at(0, 0), kingW);
+                board.setPiece(Square.at(7, 7), kingB);
+                board.setPiece(Square.at(0, 1), bishopW);
+                board.setPiece(Square.at(7,  5), bishopB);
+                board.setPiece(Square.at(1, 1), queen);
+
+                kingW.moveTo(board, Square.at(1, 1));
+
+                should.not.exist(board.finishReason);
+            });
+        });
+
+        it("threefold repetition", () => {
+            const kingW = new King(Player.WHITE);
+            const kingB = new King(Player.BLACK);
+            const queen = new Queen(Player.WHITE);
+
+            board.setPiece(Square.at(0, 0), kingB);
+            board.setPiece(Square.at(1, 7), queen);
+            board.setPiece(Square.at(2, 1), kingW);
+
+            kingW.moveTo(board, Square.at(2, 0));   // 1
+
+            kingB.moveTo(board, Square.at(0, 1));
+            kingW.moveTo(board, Square.at(2, 1));
+            kingB.moveTo(board, Square.at(0, 0));
+            kingW.moveTo(board, Square.at(2, 0));   // 2
+            kingB.moveTo(board, Square.at(0, 1));
+            kingW.moveTo(board, Square.at(2, 1));
+            kingB.moveTo(board, Square.at(0, 0));
+            kingW.moveTo(board, Square.at(2, 0));   // 3
+
+            should.exist(board.finishReason);
+            board.finishReason.should.be.equal("Stalemate! (Threefold repetition)");
+        });
+
+        it("50 move rule", () => {
+            const kingW = new King(Player.WHITE);
+            const kingB = new King(Player.BLACK);
+            const pawn = new Pawn(Player.WHITE);
+
+            board.setPiece(Square.at(2, 0), kingW);
+            board.setPiece(Square.at(0, 0), kingB);
+            board.setPiece(Square.at(7, 7), pawn); // to stop endgame checks
+
+            // walk up and down slowly (to stop threefold repetition)
+            for (let row = 0; row < 3; row++) {
+                for (let col = 1; col <= 7; col++) {
+                    kingW.moveTo(board, Square.at(row + 2, col));
+                    kingB.moveTo(board, Square.at(row, col));
+                }
+                for (let col = 6; col >= 0; col--) {
+                    kingW.moveTo(board, Square.at(row + 2, col));
+                    kingB.moveTo(board, Square.at(row, col));
+                }
+                kingW.moveTo(board, Square.at(row + 3, 0));
+                kingB.moveTo(board, Square.at(row + 1, 0));
+            }
+            for (let col = 1; col <= 5; col++) {
+                kingW.moveTo(board, Square.at(5, col));
+                kingB.moveTo(board, Square.at(3, col));
+            }
+            // 50 moves (exactly) made
+
+            console.log(board.history.length);
+
+            should.exist(board.finishReason);
+            board.finishReason.should.be.equal("Stalemate! (50 move rule)");
         });
     });
 });

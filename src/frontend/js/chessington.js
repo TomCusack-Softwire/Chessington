@@ -85,8 +85,13 @@ function boardToPositionObject() {
 }
 
 function updateStatus() {
-    const player = board.currentPlayer === Player.WHITE ? 'White' : 'Black';
-    document.getElementById('turn-status').innerHTML = `${player} to move`;
+    if (board.finishReason === undefined) {
+        const player = board.currentPlayer === Player.WHITE ? 'White' : 'Black';
+        document.getElementById('turn-status').innerHTML = `${player} to move`;
+    } else {
+        clearInterval(loop);
+        document.getElementById("turn-status").innerHTML = board.finishReason;
+    }
 }
 
 function onDragStart(source, piece, position, orientation) {

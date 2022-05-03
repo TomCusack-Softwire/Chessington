@@ -9,7 +9,7 @@ import Board from '../../../src/engine/board';
 describe('Bishop', () => {
 
     let board;
-    beforeEach(() => board = new Board());
+    beforeEach(() => board = new Board(Player.WHITE, false));
 
     it('can move diagonally', () => {
         const bishop = new Bishop(Player.WHITE);
